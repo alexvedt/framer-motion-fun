@@ -7,16 +7,18 @@ const supabaseAnonKey = import.meta.env.VITE_APIKEY;
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 const Fetching = () => {
-  const [data, setData] = useState(null);
+  const [data, setData] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const fetchData = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase.from("cv").select("id");
+      const { data, error } = await supabase
+        .from("cv")
+        .select("id, title, employee, from, to, skills, tasks");
       console.log(data, "data");
-      console.log(error, "error");
+      console.warn(error, "error");
 
       if (error) {
         throw error;
@@ -41,10 +43,15 @@ const Fetching = () => {
       ) : error ? (
         <div>Error: {error}</div>
       ) : (
-        <div>
-          <h1>Data:</h1>
-          <pre>{JSON.stringify(data, null, 2)}</pre>
-        </div>
+        <ul>
+          {data.map((item, index) => (
+            <li key={index}>
+              ID: {item.id}, Title: {item.title}, Employee: {item.employee},
+              From: {item.from}, To: {item.to}, Skills: {item.skills}, Tasks:{" "}
+              {item.tasks}
+            </li>
+          ))}
+        </ul>
       )}
     </>
   );
